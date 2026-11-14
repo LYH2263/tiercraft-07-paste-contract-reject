@@ -26,9 +26,11 @@ async function run(step) {
   busy.value = true
   err.value = ''
   try {
-    const url = step === '明细'
-      ? '/api/jobs/paste-to-detail'
-      : '/api/jobs/detail-to-summary'
+    const url = step === '装载'
+      ? '/api/jobs/load-paste'
+      : step === '明细'
+        ? '/api/jobs/paste-to-detail'
+        : '/api/jobs/detail-to-summary'
     await postJson(url, { domain_id: domainId.value })
     await refresh()
   } catch (e) {
@@ -41,7 +43,7 @@ async function run(step) {
 <template>
   <div>
     <h2>分层任务</h2>
-    <p class="lead">按主题域推进：先贴源到明细，再明细到汇总。</p>
+    <p class="lead">按主题域推进：先按契约装载贴源，再贴源到明细，再明细到汇总。</p>
     <div class="toolbar">
       <label>
         主题域
@@ -49,6 +51,7 @@ async function run(step) {
           <option v-for="d in domains" :key="d.id" :value="d.id">{{ d.name }}</option>
         </select>
       </label>
+      <button :disabled="busy" @click="run('装载')">跑贴源装载</button>
       <button :disabled="busy" @click="run('明细')">跑贴源到明细</button>
       <button class="secondary" :disabled="busy" @click="run('汇总')">跑明细到汇总</button>
     </div>

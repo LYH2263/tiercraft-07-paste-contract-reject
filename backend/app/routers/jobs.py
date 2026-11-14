@@ -15,6 +15,16 @@ def list_jobs(domain_id: int | None = None):
     return pipeline.list_jobs(domain_id)
 
 
+@router.post("/jobs/load-paste")
+def load_paste(body: JobBody):
+    try:
+        job = pipeline.run_load_paste(body.domain_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    job["step_label"] = "贴源装载"
+    return job
+
+
 @router.post("/jobs/paste-to-detail")
 def paste_to_detail(body: JobBody):
     try:
